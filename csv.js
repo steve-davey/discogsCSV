@@ -1,8 +1,3 @@
-// require('dotenv').config();
-// const TEST = process.env.TEST;
-// console.log(TEST);
-// const KEY = process.env.KEY;
-// const SECRET = process.env.SECRET;
 let allRows = [];
 
 async function fileToLines(file) {
@@ -43,12 +38,11 @@ function throttledQueue(maxRequestsPerInterval, interval, evenlySpaced) {
   var queue = [];
   var lastIntervalStart = 0;
   var numRequestsPerInterval = 0;
-  var timeout; // Gets called at a set interval to remove items from the queue. This is a self-adjusting timer, since the browser's setTimeout is highly inaccurate.
+  var timeout;
   var dequeue = function () {
     var intervalEnd = lastIntervalStart + interval;
-    var now = Date.now(); // Adjust the timer if it was called too early.
+    var now = Date.now();
     if (now < intervalEnd) { 
-      // eslint - disable - next - line @typescript-eslint / no - unsafe - argument timeout !== undefined && clearTimeout(timeout);
       timeout = setTimeout(dequeue, intervalEnd - now);
       return;
     }
@@ -78,11 +72,6 @@ function throttledQueue(maxRequestsPerInterval, interval, evenlySpaced) {
   };
 }
 
-// module.exports =  throttledQueue ;
-
-// <script type="module"> import throttledQueue from './throttledQueue.js'; console.log(throttledQueue); </script>
-
-// const throttledQueue = require('throttled-queue');
 const throttle = throttledQueue(1, 1000);
 
 throttle(() => getRelease(idFiltered));
@@ -90,7 +79,7 @@ throttle(() => getRelease(idFiltered));
 async function getRelease(idFiltered) {
   return fetch(`https://api.discogs.com/releases/${idFiltered}`, {
     headers: {
-      'User-Agent': 'Dispodger/0.1',
+      'User-Agent': 'DiscogsCSV/0.1',
       'Authorization': `Discogs key=${KEY}, secret=${SECRET}`,
     },
   }).then(response => response.json())
