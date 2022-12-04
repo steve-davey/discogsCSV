@@ -1,0 +1,17 @@
+{
+  "name": "node-env-file-demo",
+  "version": "1.0.0",
+  "description": "Node.js example loading .env files",
+  "main": "src/csv.js",
+  "scripts": {
+    "start": "nodemon src/index.js"
+  },
+  "dependencies": {
+    "dotenv": "10.0.0",
+    "throttled-queue": "^2.1.4"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  },
+  "keywords": []
+}
