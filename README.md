@@ -1,6 +1,6 @@
 DiscogsCSV is intended to do the following:
 
-Take as input a .csv file, the first column of which contains valid discogs release IDs
+Take as input a .csv file, the first column of which contains valid discogs release IDs  
 Return as output the same .csv file, with data for the following columns included:
 
 - release_id
