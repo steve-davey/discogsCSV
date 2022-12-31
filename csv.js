@@ -97,7 +97,7 @@ async function getRelease(idFiltered) {
         const qty = data.formats.map(format => format.qty);
         const tracklist = data.tracklist.map(track => track.title);
         const formattedLabels = labels.map(label => label.name);
-        const delimiter = document.getElementById("delimiter").value || "|";
+        const delimiter = document.getElementById("delimiter").value ?? "|";
         const formattedBarcode = barcode.join(delimiter);
         const formattedCatNo = catno.join(delimiter);
         const formattedGenres = genres.join(delimiter);
