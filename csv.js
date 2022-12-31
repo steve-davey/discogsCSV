@@ -91,25 +91,27 @@ async function getRelease(idFiltered) {
         const artists = data.artists?.map?.(artist => artist.name);
         const barcode = data.identifiers.filter(id => id.type === 'Barcode').map(barcode => barcode.value);
         const catno = data.labels.map(catno => catno.catno);
+        let uniqueCatno = [...new Set(catno)];
         const descriptions = data.formats.map(descriptions => descriptions.descriptions);
         const format = data.formats.map(format => format.name);
         const labels = data.labels.map(label => label.name);
+        let uniqueLabels = [...new Set(labels)];
         const qty = data.formats.map(format => format.qty);
         const tracklist = data.tracklist.map(track => track.title);
         // const delimiter = document.getElementById("delimiter").value || "|";
         const delimiter = "|";
         const formattedBarcode = barcode.join(delimiter);
-        const formattedCatNo = catno.join(delimiter);
+        const formattedCatNo = uniqueCatno.join(delimiter);
         const formattedGenres = genres.join(delimiter);
-        const formattedLabels = labels.join(delimiter);
+        const formattedLabels = uniqueLabels.join(delimiter);
         const formattedStyles = styles.join(delimiter);
         const formattedTracklist = tracklist.join(delimiter);
         const preformattedDescriptions = descriptions.toString()
           .replace('"', '""').replace(/,/g, ', ');
         const formattedDescriptions = '"' + preformattedDescriptions + '"';
-        // console.log(data);
-        // console.log(labels);
-        // console.log(formattedLabels);
+        console.log(data);
+        console.log(labels);
+        console.log(formattedLabels);
 
         return [idFiltered,
           artists,
