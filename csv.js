@@ -96,18 +96,20 @@ async function getRelease(idFiltered) {
         const labels = data.labels.map(label => label.name);
         const qty = data.formats.map(format => format.qty);
         const tracklist = data.tracklist.map(track => track.title);
-        const formattedLabels = labels.map(label => label.name);
         // const delimiter = document.getElementById("delimiter").value || "|";
         const delimiter = "|";
         const formattedBarcode = barcode.join(delimiter);
         const formattedCatNo = catno.join(delimiter);
         const formattedGenres = genres.join(delimiter);
+        const formattedLabels = labels.join(delimiter);
         const formattedStyles = styles.join(delimiter);
         const formattedTracklist = tracklist.join(delimiter);
         const preformattedDescriptions = descriptions.toString()
           .replace('"', '""').replace(/,/g, ', ');
         const formattedDescriptions = '"' + preformattedDescriptions + '"';
-        console.log(data);
+        // console.log(data);
+        // console.log(labels);
+        // console.log(formattedLabels);
 
         return [idFiltered,
           artists,
