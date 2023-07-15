@@ -1,4 +1,5 @@
 let allRows = [];
+let idFiltered;
 
 async function fileToLines(file) {
   return new Promise((resolve, reject) => {
@@ -14,11 +15,11 @@ async function fileToLines(file) {
 document
   .getElementById('fileInput')
   .addEventListener('change', async function (e) {
-    var file = e.target.files[0];
+    const file = e.target.files[0];
 
     if (file != undefined) {
       fileToLines(file).then(async id => {
-        var idFiltered = id.filter(function (v) { return v !== '' });
+        idFiltered = id.filter(function (v) { return v !== '' });
         if (file != undefined) {
           allRows = [];
         }
@@ -35,33 +36,34 @@ document
 function throttledQueue(maxRequestsPerInterval, interval, evenlySpaced) {
   if (evenlySpaced === void 0) { evenlySpaced = false; } // If all requests should be evenly spaced, adjust to suit.
   if (evenlySpaced) { interval = interval / maxRequestsPerInterval; maxRequestsPerInterval = 1; }
-  var queue = [];
-  var lastIntervalStart = 0;
-  var numRequestsPerInterval = 0;
-  var timeout;
-  var dequeue = function () {
-    var intervalEnd = lastIntervalStart + interval;
-    var now = Date.now();
+  const queue = [];
+  let lastIntervalStart = 0;
+  let numRequestsPerInterval = 0;
+  let timeout;
+  const dequeue = function () {
+    const intervalEnd = lastIntervalStart + interval;
+    let now = Date.now();
     if (now < intervalEnd) { 
       timeout = setTimeout(dequeue, intervalEnd - now);
       return;
     }
     lastIntervalStart = now;
     numRequestsPerInterval = 0;
-    for (var _i = 0, _a = queue.splice(0, maxRequestsPerInterval); _i < _a.length; _i++) {
-      var callback = _a[_i]; numRequestsPerInterval++; void callback();
+    for (const _i = 0, _a = queue.splice(0, maxRequestsPerInterval); _i < _a.length; _i++) {
+      const callback = _a[_i]; numRequestsPerInterval++; void callback();
     }
     if (queue.length) {
       timeout = setTimeout(dequeue, interval);
     }
     else { timeout = undefined; }
   };
+  
   return function (fn) {
     return new Promise(function (resolve, reject) {
-      var callback = function () {
+      const callback = function () {
         return Promise.resolve().then(fn).then(resolve).catch(reject);
       };
-      var now = Date.now(); 
+      let now = Date.now(); 
       if (timeout === undefined && (now - lastIntervalStart) > interval) { lastIntervalStart = now; numRequestsPerInterval = 0; }
       if (numRequestsPerInterval++ < maxRequestsPerInterval) { void callback(); }
       else {
@@ -79,8 +81,11 @@ throttle(() => getRelease(idFiltered));
 async function getRelease(idFiltered) {
   return fetch(`https://api.discogs.com/releases/${idFiltered}`, {
     headers: {
-      'User-Agent': 'DiscogsCSV/0.1',
-      'Authorization': `Discogs key=${KEY}, secret=${SECRET}`,
+      'User-Agent': 'DiscogsCSV/0.1'
+      ,'Authorization': `Discogs key=${KEY}, secret=${SECRET}`
+      ,'Access-Control-Allow-Origin': '*'
+      ,'Access-Control-Allow-Methods': 'DELETE, POST, GET, OPTIONS'
+      ,'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With'
     },
   }).then(response => response.json())
     .then(data => {
@@ -98,8 +103,8 @@ async function getRelease(idFiltered) {
         let uniqueLabels = [...new Set(labels)];
         const qty = data.formats.map(format => format.qty);
         const tracklist = data.tracklist.map(track => track.title);
-        // const delimiter = document.getElementById("delimiter").value || "|";
-        const delimiter = "|";
+        // const delimiter = document.getElementById('delimiter').value || '|';
+        const delimiter = '|';
         const formattedBarcode = barcode.join(delimiter);
         const formattedCatNo = uniqueCatno.join(delimiter);
         const formattedGenres = genres.join(delimiter);
@@ -114,18 +119,18 @@ async function getRelease(idFiltered) {
         console.log(formattedLabels);
 
         return [idFiltered,
-          artists,
-          format,
-          qty,
-          formattedDescriptions,
-          formattedLabels,
-          formattedCatNo,
-          country,
-          year,
-          formattedGenres,
-          formattedStyles,
-          formattedBarcode,
-          formattedTracklist
+           artists
+          ,format
+          ,qty
+          ,formattedDescriptions
+          ,formattedLabels
+          ,formattedCatNo
+          ,country
+          ,year
+          ,formattedGenres
+          ,formattedStyles
+          ,formattedBarcode
+          ,formattedTracklist
         ];
       }
     });
@@ -133,27 +138,27 @@ async function getRelease(idFiltered) {
 
 function download() {
   const ROW_NAMES = [
-    "release_id",
-    "artist",
-    "format",
-    "qty",
-    "format descriptions",
-    "label",
-    "catno",
-    "country",
-    "year",
-    "genres",
-    "styles",
-    "barcode",
-    "tracklist"
+     'release_id'
+    ,'artist'
+    ,'format'
+    ,'qty'
+    ,'format descriptions'
+    ,'label'
+    ,'catno'
+    ,'country'
+    ,'year'
+    ,'genres'
+    ,'styles'
+    ,'barcode'
+    ,'tracklist'
   ];
-  const csvContent = "data:text/csv;charset=utf-8,"
-    + ROW_NAMES + "\n" + allRows.map(e => e.join(",")).join("\n");
+  const csvContent = 'data:text/csv;charset=utf-8,'
+    + ROW_NAMES + '\n' + allRows.map(e => e.join(',')).join('\n');
 
   const encodedUri = encodeURI(csvContent);
-  const link = document.createElement("a");
-  link.setAttribute("href", encodedUri);
-  link.setAttribute("download", "my_data.csv");
+  const link = document.createElement('a');
+  link.setAttribute('href', encodedUri);
+  link.setAttribute('download', 'my_data.csv');
   document.body.appendChild(link); // Required for Firefox
   link.click();
 }
