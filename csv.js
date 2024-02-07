@@ -1,31 +1,45 @@
+const ROW_NAMES = [
+  'release_id'
+ ,'artist'
+ ,'format'
+ ,'qty'
+ ,'format descriptions'
+ ,'label'
+ ,'catno'
+ ,'country'
+ ,'year'
+ ,'genres'
+ ,'styles'
+ ,'barcode'
+ ,'tracklist'
+];
+
 let allRows = [];
 let idFiltered;
 
 async function fileToLines(file) {
   return new Promise((resolve, reject) => {
-    reader = new FileReader();
+    const reader = new FileReader();
     reader.onload = function (e) {
-      parsedLines = e.target.result.split(/\r|\n|\r\n/);
+      const parsedLines = e.target.result.split(/\r|\n|\r\n/);
       resolve(parsedLines);
     };
+    reader.onerror = reject;
     reader.readAsText(file);
   });
 }
 
-document
-  .getElementById('fileInput')
-  .addEventListener('change', async function (e) {
+document.getElementById('fileInput').addEventListener('change', async function (e) {
     const file = e.target.files[0];
-
-    if (file != undefined) {
-      fileToLines(file).then(async id => {
-        idFiltered = id.filter(function (v) { return v !== '' });
+    if (file) {
+      fileToLines(file).then(async releaseId => {
+        idFiltered = releaseId.filter(function (v) { return v !== '' });
         if (file != undefined) {
           allRows = [];
         }
 
-        for (let id of idFiltered) {
-          const row = await getRelease(id);
+        for (let releaseId of idFiltered) {
+          const row = await getRelease(releaseId);
           allRows.push(row);
         }
         download();
@@ -137,24 +151,7 @@ async function getRelease(idFiltered) {
 }
 
 function download() {
-  const ROW_NAMES = [
-     'release_id'
-    ,'artist'
-    ,'format'
-    ,'qty'
-    ,'format descriptions'
-    ,'label'
-    ,'catno'
-    ,'country'
-    ,'year'
-    ,'genres'
-    ,'styles'
-    ,'barcode'
-    ,'tracklist'
-  ];
-  const csvContent = 'data:text/csv;charset=utf-8,'
-    + ROW_NAMES + '\n' + allRows.map(e => e.join(',')).join('\n');
-
+  const csvContent = 'data:text/csv;charset=utf-8,' + ROW_NAMES + '\n' + allRows.map(e => e.join(',')).join('\n');
   const encodedUri = encodeURI(csvContent);
   const link = document.createElement('a');
   link.setAttribute('href', encodedUri);
