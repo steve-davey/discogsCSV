@@ -48,13 +48,24 @@ if (fileInputElement) {
     });
 }
 
-function getRelease(releaseId: string): Promise<ReleaseData | { error: string }> {
-    return fetchRelease(releaseId)
-        .then(data => processReleaseData(releaseId, data))
-        .catch(error => ({ error: `Release with ID ${releaseId} does not exist` }));
+// function getRelease(releaseId: string): Promise<ReleaseData | { error: string }> {
+//     return fetchRelease(releaseId)
+//         .then(data => processReleaseData(releaseId, data))
+//         .catch(error => ({ error: `Release with ID ${releaseId} does not exist` }));
+// }
+
+async function getRelease(releaseId: string): Promise<any[] | { error: string }> {
+    try {
+        const { data } = await fetchRelease(releaseId);
+        return processReleaseData(releaseId, data);
+    } catch (error) {
+        return {
+            error: `Release with ID ${releaseId} does not exist`
+        };
+    }
 }
 
-async function fetchRelease(releaseId: string): Promise<ReleaseData> {
+async function fetchRelease(releaseId: string): Promise<{data: ReleaseData}> {
     const response = await fetch(`https://api.discogs.com//releases/${releaseId}`, {
         headers: {
             'User-Agent': 'DiscogsCSV/0.1',
@@ -67,8 +78,8 @@ async function fetchRelease(releaseId: string): Promise<ReleaseData> {
     return response.json();
 }
 
-function processReleaseData(releaseId: string, data: ReleaseData): FormattedData {
-    
+function processReleaseData(releaseId: string, data: ReleaseData) {
+
     const { country = 'Unknown', genres = [], styles = [], year = 'Unknown' } = data;
     const artists = data.artists?.map?.(artist => artist.name);
     const barcode = data.identifiers.filter(id => id.type === 'Barcode').map(barcode => barcode.value);
@@ -90,25 +101,25 @@ function processReleaseData(releaseId: string, data: ReleaseData): FormattedData
     const formattedTracklist = tracklist.join(delimiter);
     const preformattedDescriptions = descriptions.toString().replace('"', '""').replace(/,/g, ', ');
     const formattedDescriptions = '"' + preformattedDescriptions + '"';
-    let formattedData: any[] = 
-        [releaseId, 
-        artists, 
-        format, 
-        qty,
-        formattedDescriptions,
-        formattedLabels, 
-        formattedCatNo, 
-        country,
-        year,
-        formattedGenres, 
-        formattedStyles, 
-        formattedBarcode,              
-        formattedTracklist]; 
+    let formattedData: any[] =
+        [releaseId,
+            artists,
+            format,
+            qty,
+            formattedDescriptions,
+            formattedLabels,
+            formattedCatNo,
+            country,
+            year,
+            formattedGenres,
+            formattedStyles,
+            formattedBarcode,
+            formattedTracklist];
 
     return formattedData;
 }
 
-function download(data: FormattedData[]) {
+function download(data: any[]) {
     const csvContent = "data:text/csv;charset=utf-8," + ROW_NAMES.join(",") + "\n" + data.map(e => e.join(",")).join("\n");
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
@@ -134,18 +145,5 @@ interface ReleaseData {
     styles?: Array<string>;
     tracklist: Array<any>;
     year?: string;
-
-}
-
-interface FormattedData {
-
-    formattedBarcode?: string;
-    formattedCatNo: string;
-    formattedDescriptions?: Array<any>;
-    formattedGenres: Array<any>;
-    formattedLabels: Array<any>;
-    formattedStyles?: Array<any>;
-    formattedTracklist: Array<any>;
-    preformattedDescriptions?: Array<any>;
 
 }
