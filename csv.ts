@@ -18,26 +18,35 @@ async function fileToLines(file: File): Promise<string[]> {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = function (e) {
-            const parsedLines = (e.target.result as string).split(/\r|\n|\r\n/);
-            resolve(parsedLines);
+            if (e.target) {
+                const parsedLines = (e.target.result as string).split(/\r|\n|\r\n/);
+                resolve(parsedLines);
+            } else {
+                reject();
+            }
         };
         reader.onerror = reject;
         reader.readAsText(file);
     });
 }
 
-('fileInput').addEventListener('change', async function (e) {
-    const file = (e.target as HTMLInputElement).files[0];
-    if (file) {
-        try {
-            const idFiltered = (await fileToLines(file)).filter(v => v !== '');
-            const allRows = await Promise.all(idFiltered.map(getRelease));
-            download(allRows);
-        } catch (error) {
-            console.error('Error processing file:', error);
+const fileInputElement = document.getElementById("fileInput");
+
+if (fileInputElement) {
+    fileInputElement.addEventListener("change", async function (e: Event) {
+        const files = (e.target as HTMLInputElement).files;
+        if (files) {
+            const file = files[0];
+            try {
+                const idFiltered = (await fileToLines(file)).filter((v) => v !== "");
+                const allRows = await Promise.all(idFiltered.map(getRelease));
+                download(allRows);
+            } catch (error) {
+                console.error("Error processing file:", error);
+            }
         }
-    }
-});
+    });
+}
 
 function getRelease(releaseId: string): Promise<ReleaseData | { error: string }> {
     return fetchRelease(releaseId)
@@ -59,8 +68,42 @@ async function fetchRelease(releaseId: string): Promise<ReleaseData> {
 }
 
 function processReleaseData(releaseId: string, data: ReleaseData): FormattedData {
-
-    // Process and format data here
+    
+    const { country = 'Unknown', genres = [], styles = [], year = 'Unknown' } = data;
+    const artists = data.artists?.map?.(artist => artist.name);
+    const barcode = data.identifiers.filter(id => id.type === 'Barcode').map(barcode => barcode.value);
+    const catno = data.labels.map(catno => catno.catno);
+    let uniqueCatno = [...new Set(catno)];
+    const descriptions = data.formats.map(descriptions => descriptions.descriptions);
+    const format = data.formats.map(format => format.name);
+    const labels = data.labels.map(label => label.name);
+    let uniqueLabels = [...new Set(labels)];
+    const qty = data.formats.map(format => format.qty);
+    const tracklist = data.tracklist.map(track => track.title);
+    // const delimiter = document.getElementById('delimiter').value || '|';
+    const delimiter = '|';
+    const formattedBarcode = barcode.join(delimiter);
+    const formattedCatNo = uniqueCatno.join(delimiter);
+    const formattedGenres = genres.join(delimiter);
+    const formattedLabels = uniqueLabels.join(delimiter);
+    const formattedStyles = styles.join(delimiter);
+    const formattedTracklist = tracklist.join(delimiter);
+    const preformattedDescriptions = descriptions.toString().replace('"', '""').replace(/,/g, ', ');
+    const formattedDescriptions = '"' + preformattedDescriptions + '"';
+    let formattedData: any[] = 
+        [releaseId, 
+        artists, 
+        format, 
+        qty,
+        formattedDescriptions,
+        formattedLabels, 
+        formattedCatNo, 
+        country,
+        year,
+        formattedGenres, 
+        formattedStyles, 
+        formattedBarcode,              
+        formattedTracklist]; 
 
     return formattedData;
 }
@@ -77,12 +120,32 @@ function download(data: FormattedData[]) {
 
 interface ReleaseData {
 
-    // Define the structure of release data
+    artists: Array<any>;
+    barcode?: string;
+    catno: string;
+    country?: string;
+    descriptions?: Array<string>;
+    format: string;
+    formats: Array<any>;
+    genres: Array<string>;
+    identifiers: Array<any>;
+    labels: Array<any>;
+    qty: string;
+    styles?: Array<string>;
+    tracklist: Array<any>;
+    year?: string;
 
 }
 
 interface FormattedData {
 
-    // Define the structure of formatted data
+    formattedBarcode?: string;
+    formattedCatNo: string;
+    formattedDescriptions?: Array<any>;
+    formattedGenres: Array<any>;
+    formattedLabels: Array<any>;
+    formattedStyles?: Array<any>;
+    formattedTracklist: Array<any>;
+    preformattedDescriptions?: Array<any>;
 
 }

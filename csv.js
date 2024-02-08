@@ -21,8 +21,12 @@ async function fileToLines(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = function (e) {
+      if (e.target) {
       const parsedLines = e.target.result.split(/\r|\n|\r\n/);
       resolve(parsedLines);
+    } else {
+      reject();
+    }
     };
     reader.onerror = reject;
     reader.readAsText(file);
