@@ -48,12 +48,6 @@ if (fileInputElement) {
     });
 }
 
-// function getRelease(releaseId: string): Promise<ReleaseData | { error: string }> {
-//     return fetchRelease(releaseId)
-//         .then(data => processReleaseData(releaseId, data))
-//         .catch(error => ({ error: `Release with ID ${releaseId} does not exist` }));
-// }
-
 async function getRelease(releaseId: string): Promise<any[] | { error: string }> {
     try {
         const { data } = await fetchRelease(releaseId);
