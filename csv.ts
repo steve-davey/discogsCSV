@@ -59,7 +59,7 @@ async function getRelease(releaseId: string): Promise<any[] | { error: string }>
     }
 }
 
-async function fetchRelease(releaseId: string): Promise<{data: ReleaseData}> {
+async function fetchRelease(releaseId: string): Promise<{ data: ReleaseData }> {
     const response = await fetch(`https://api.discogs.com//releases/${releaseId}`, {
         headers: {
             'User-Agent': 'DiscogsCSV/0.1',
@@ -95,20 +95,21 @@ function processReleaseData(releaseId: string, data: ReleaseData) {
     const formattedTracklist = tracklist.join(delimiter);
     const preformattedDescriptions = descriptions.toString().replace('"', '""').replace(/,/g, ', ');
     const formattedDescriptions = '"' + preformattedDescriptions + '"';
-    let formattedData: any[] =
-        [releaseId,
-            artists,
-            format,
-            qty,
-            formattedDescriptions,
-            formattedLabels,
-            formattedCatNo,
-            country,
-            year,
-            formattedGenres,
-            formattedStyles,
-            formattedBarcode,
-            formattedTracklist];
+    let formattedData: any[] = [
+        releaseId,
+        artists,
+        format,
+        qty,
+        formattedDescriptions,
+        formattedLabels,
+        formattedCatNo,
+        country,
+        year,
+        formattedGenres,
+        formattedStyles,
+        formattedBarcode,
+        formattedTracklist
+    ];
 
     return formattedData;
 }
