@@ -53,7 +53,7 @@ if (fileInputElement) {
                 const file = files[0];
                 try {
                     const idFiltered = (yield fileToLines(file)).filter((v) => v !== "");
-                    const allRows = yield Promise.all(idFiltered.map(getRelease));
+                    const allRows = yield Promise.all(idFiltered.map(fetchRelease));
                     download(allRows);
                 }
                 catch (error) {
@@ -63,10 +63,10 @@ if (fileInputElement) {
         });
     });
 }
-function getRelease(releaseId) {
+function fetchRelease(releaseId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const { data } = yield fetchRelease(releaseId);
+            const { data } = yield db.getRelease(releaseId);
             return processReleaseData(releaseId, data);
         }
         catch (error) {
@@ -74,20 +74,6 @@ function getRelease(releaseId) {
                 error: `Release with ID ${releaseId} does not exist`
             };
         }
-    });
-}
-function fetchRelease(releaseId) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const response = yield fetch(`https://api.discogs.com//releases/${releaseId}`, {
-            headers: {
-                'User-Agent': 'DiscogsCSV/0.1',
-                'Authorization': `Bearer ${process.env.API_KEY}`,
-            },
-        });
-        if (!response.ok) {
-            throw new Error('Failed to fetch release');
-        }
-        return response.json();
     });
 }
 function processReleaseData(releaseId, data) {
