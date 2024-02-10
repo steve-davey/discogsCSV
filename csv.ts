@@ -1,3 +1,8 @@
+import { DiscogsClient } from '@lionralfs/discogs-client';
+import { GetReleaseResponse } from '@lionralfs/discogs-client/types/types'; 
+
+let db = new DiscogsClient().database();
+
 const ROW_NAMES: string[] = [
     "release_id",
     "artist",
@@ -39,7 +44,7 @@ if (fileInputElement) {
             const file = files[0];
             try {
                 const idFiltered = (await fileToLines(file)).filter((v) => v !== "");
-                const allRows = await Promise.all(idFiltered.map(getRelease));
+                const allRows = await Promise.all(idFiltered.map(fetchRelease));
                 download(allRows);
             } catch (error) {
                 console.error("Error processing file:", error);
@@ -48,9 +53,9 @@ if (fileInputElement) {
     });
 }
 
-async function getRelease(releaseId: string): Promise<any[] | { error: string }> {
+async function fetchRelease(releaseId: string): Promise<any[] | { error: string }> {
     try {
-        const { data } = await fetchRelease(releaseId);
+        const { data } = await db.getRelease(releaseId);
         return processReleaseData(releaseId, data);
     } catch (error) {
         return {
@@ -59,20 +64,7 @@ async function getRelease(releaseId: string): Promise<any[] | { error: string }>
     }
 }
 
-async function fetchRelease(releaseId: string): Promise<{ data: ReleaseData }> {
-    const response = await fetch(`https://api.discogs.com//releases/${releaseId}`, {
-        headers: {
-            'User-Agent': 'DiscogsCSV/0.1',
-            'Authorization': `Bearer ${process.env.API_KEY}`,
-        },
-    });
-    if (!response.ok) {
-        throw new Error('Failed to fetch release');
-    }
-    return response.json();
-}
-
-function processReleaseData(releaseId: string, data: ReleaseData) {
+function processReleaseData(releaseId: string, data: GetReleaseResponse) {
 
     const { country = 'Unknown', genres = [], styles = [], year = 'Unknown' } = data;
     const artists = data.artists?.map?.(artist => artist.name);
@@ -122,23 +114,4 @@ function download(data: any[]) {
     link.setAttribute("download", "my_data.csv");
     document.body.appendChild(link); // Required for Firefox
     link.click();
-}
-
-interface ReleaseData {
-
-    artists: Array<any>;
-    barcode?: string;
-    catno: string;
-    country?: string;
-    descriptions?: Array<string>;
-    format: string;
-    formats: Array<any>;
-    genres: Array<string>;
-    identifiers: Array<any>;
-    labels: Array<any>;
-    qty: string;
-    styles?: Array<string>;
-    tracklist: Array<any>;
-    year?: string;
-
 }
