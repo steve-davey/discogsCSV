@@ -45,8 +45,8 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-import { DiscogsClient } from "@lionralfs/discogs-client";
-var db = new DiscogsClient().database();
+var discogs_client_1 = require("@lionralfs/discogs-client");
+var db = new discogs_client_1.DiscogsClient().database();
 var ROW_NAMES = [
     "release_id",
     "artist",
