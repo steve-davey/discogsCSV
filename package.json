@@ -1,20 +1,38 @@
 {
-  "name": "node-env-file-demo",
-  "version": "1.0.0",
-  "description": "Node.js example loading .env files",
-  "main": "src/csv.js",
+  "name": "vue-project",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "start": "nodemon src/index.js"
+    "dev": "vite",
+    "build": "run-p type-check \"build-only {@}\" --",
+    "preview": "vite preview",
+    "build-only": "vite build",
+    "type-check": "vue-tsc --build --force",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "format": "prettier --write src/"
   },
   "dependencies": {
     "@lionralfs/discogs-client": "^4.0.0",
-    "dotenv": "10.0.0",
-    "throttled-queue": "^2.1.4"
+    "papaparse": "^5.4.1",
+    "vue": "^3.4.15",
+    "vue-csv-import": "^4.1.2"
   },
   "devDependencies": {
-    "@types/node": "^20.11.16",
-    "nodemon": "^3.0.3",
-    "typescript": "^5.3.3"
-  },
-  "keywords": []
+    "@rushstack/eslint-patch": "^1.3.3",
+    "@tsconfig/node20": "^20.1.2",
+    "@types/node": "^20.11.10",
+    "@types/papaparse": "^5.3.14",
+    "@vitejs/plugin-vue": "^5.0.3",
+    "@vue/eslint-config-prettier": "^8.0.0",
+    "@vue/eslint-config-typescript": "^12.0.0",
+    "@vue/tsconfig": "^0.5.1",
+    "eslint": "^8.49.0",
+    "eslint-plugin-vue": "^9.17.0",
+    "npm-run-all2": "^6.1.1",
+    "prettier": "^3.0.3",
+    "typescript": "~5.3.0",
+    "vite": "^5.0.11",
+    "vue-tsc": "^1.8.27"
+  }
 }
