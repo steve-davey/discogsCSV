@@ -1,5 +1,9 @@
 <template>
     <div>
+        <button @click="downloadSampleInputFile">Download sample file</button>
+    </div>
+
+    <div>
         <FileUpload @file="setFile" />
     </div>
 
@@ -43,6 +47,15 @@ export default defineComponent({
         },
         async downloadCSV(releases: any[]) {
             prepareDownload(releases)
+        },
+        async downloadSampleInputFile() {
+            const link = document.createElement('a');
+            link.href = '/src/assets/test_5_lines.csv';
+            link.target = '_blank';
+            link.download = 'test_5_lines.csv';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     },
     watch: {
