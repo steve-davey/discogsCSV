@@ -1,6 +1,10 @@
 <template>
     <div>
-        <button @click="downloadSampleInputFile">Download sample file</button>
+        <button @click="downloadSampleInputFile">Download basic sample file</button>
+    </div>
+
+    <div>
+        <button @click="createSampleInputFile">Download random sample file</button>
     </div>
 
     <div>
@@ -18,30 +22,24 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import FileUpload from '@/components/FileUpload.vue';
-import { fetchRelease, parseCsvToArray } from "@/parser";
+import { fetchRelease, parseCsvToArray } from '@/parser';
 import { prepareDownload } from './components/PrepareDownload';
-// import { downloadSampleInputFile } from './components/DownloadSampleInputFile'; <--not working yet
+import { downloadSampleInputFile } from './components/DownloadSampleInputFile'; //defined but never used
+import { createSampleInputFile } from './components/CreateSampleInputFile'; //defined but never used
 
 export default defineComponent({
     name: 'App',
     components: {
-        FileUpload,
+        FileUpload
     },
     data() {
         return {
             data: null as null | string[],
+            createSampleInputFile,
+            downloadSampleInputFile
         }
     },
     methods: {
-        async downloadSampleInputFile() {
-            const link = document.createElement('a');
-            link.href = '/src/assets/test_5_lines.csv';
-            link.target = '_blank';
-            link.download = 'test_5_lines.csv';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        },
         async setFile(file: File) {
             this.data = await parseCsvToArray(file)
             console.log(this.data)
@@ -58,7 +56,6 @@ export default defineComponent({
         async downloadCSV(releases: any[]) {
             prepareDownload(releases)
         },
-
     },
     watch: {
         data(data) {
