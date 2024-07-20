@@ -24,8 +24,8 @@ import { defineComponent } from 'vue';
 import FileUpload from '@/components/FileUpload.vue';
 import { fetchRelease, parseCsvToArray } from '@/parser';
 import { prepareDownload } from './components/PrepareDownload';
-import { downloadSampleInputFile } from './components/DownloadSampleInputFile'; //defined but never used
-import { createSampleInputFile } from './components/CreateSampleInputFile'; //defined but never used
+import { downloadSampleInputFile } from './components/DownloadSampleInputFile';
+import { createSampleInputFile } from './components/CreateSampleInputFile';
 
 export default defineComponent({
     name: 'App',

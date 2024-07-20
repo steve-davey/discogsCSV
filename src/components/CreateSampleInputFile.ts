@@ -11,6 +11,7 @@ export function createSampleInputFile() {
     for (let i = 0; i < 10; i++) {
       const randomNumber = Math.floor(Math.random() * 1000) + 1
       randomArray.push(randomNumber)
+      console.log(randomArray)
     }
     return randomArray
   }
@@ -35,11 +36,6 @@ export function createSampleInputFile() {
     download(csvdata)
   }
 
-  const button = document.getElementById('action')
-
-  if (button === null) {
-    alert('oops')
-  } else {
-    button.addEventListener('click', get)
-  }
+  const button = document.getElementById('a')
+  button.addEventListener('click', get)
 }
