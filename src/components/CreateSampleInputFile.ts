@@ -17,6 +17,7 @@ export function createSampleInputFile() {
   }
 
   const createCsv = function (randomArray: any) {
+    console.log(randomArray)
     return randomArray.join('\n')
   }
 
@@ -30,7 +31,7 @@ export function createSampleInputFile() {
   }
 
   const get = async () => {
-    const csvdata = createCsv(createRandomArray)
+    const csvdata = createCsv(createRandomArray())
     download(csvdata)
   }
 
