@@ -30,11 +30,6 @@ export function createSampleInputFile() {
     a.click()
   }
 
-  const get = async () => {
-    const csvdata = createCsv(createRandomArray())
-    download(csvdata)
-  }
-
-  const button = document.getElementById('downloadRandomSample')
-  button.addEventListener('click', get)
+  const csvdata = createCsv(createRandomArray())
+  download(csvdata)
 }
