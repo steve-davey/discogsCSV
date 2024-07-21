@@ -1,10 +1,10 @@
 <template>
     <div>
-        <button @click="downloadSampleInputFile">Download basic sample file</button>
+        <button id="downloadBasicSample" @click="downloadSampleInputFile">Download basic sample file</button>
     </div>
 
     <div>
-        <button @click="createSampleInputFile">Download random sample file</button>
+        <button id="downloadRandomSample" @click="createSampleInputFile">Download random sample file</button>
     </div>
 
     <div>
@@ -22,10 +22,10 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import FileUpload from '@/components/FileUpload.vue';
+import { createSampleInputFile } from './components/CreateSampleInputFile';
+import { downloadSampleInputFile } from './components/DownloadSampleInputFile';
 import { fetchRelease, parseCsvToArray } from '@/parser';
 import { prepareDownload } from './components/PrepareDownload';
-import { downloadSampleInputFile } from './components/DownloadSampleInputFile';
-import { createSampleInputFile } from './components/CreateSampleInputFile';
 
 export default defineComponent({
     name: 'App',
