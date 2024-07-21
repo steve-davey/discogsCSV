@@ -46,20 +46,21 @@ export default defineComponent({
         },
         async fetchReleases(idList: string[]) {
             try {
-                const releases = await fetchRelease(idList)
-                console.log('Fetched releases from Discogs', releases)
-                return releases
+                const data = await fetchRelease(idList)
+                console.log('Fetched data from Discogs', data)
+                return data
             } catch (err) {
                 console.log('Failed fetching releases', err)
             }
         },
-        async downloadCSV(releases: any[]) {
-            prepareDownload(releases)
+        async downloadCSV(data: any[]) {
+            prepareDownload(data)
         },
     },
     watch: {
         data(data) {
             this.fetchReleases(data)
+            this.downloadCSV(data)
         }
     },
 });

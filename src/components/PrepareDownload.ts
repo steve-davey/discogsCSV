@@ -7,12 +7,12 @@ export default {
   }
 }
 
-export function prepareDownload(releases: any[]) {
+export function prepareDownload(data: any[]) {
   const csvContent =
-    'releases:text/csv;charset=utf-8,' +
+    'data:text/csv;charset=utf-8,' +
     ROW_NAMES.join(',') +
     '\n' +
-    releases.map((e) => e.join(',')).join('\n')
+    data.map((e) => e.join(',')).join('\n')
   const encodedUri = encodeURI(csvContent)
   const link = document.createElement('a')
   link.setAttribute('href', encodedUri)
