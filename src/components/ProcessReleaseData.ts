@@ -22,6 +22,7 @@ export function processReleaseData(releaseId: string, data: GetReleaseResponse) 
   const tracklist = data.tracklist.map((track) => track.title)
   const uniqueCatno = [...new Set(catno)]
   const uniqueLabels = [...new Set(labels)]
+  const formattedArtists = artists.join(delimiter)
   const formattedBarcode = barcode.join(delimiter)
   const formattedCatNo = uniqueCatno.join(delimiter)
   const formattedGenres = genres.join(delimiter)
@@ -32,7 +33,7 @@ export function processReleaseData(releaseId: string, data: GetReleaseResponse) 
   const formattedDescriptions = '"' + preformattedDescriptions + '"'
   const formattedData: any[] = [
     releaseId,
-    artists,
+    formattedArtists,
     format,
     qty,
     formattedDescriptions,

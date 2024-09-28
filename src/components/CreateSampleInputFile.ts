@@ -7,17 +7,14 @@ export default {
 
 export function createSampleInputFile() {
   const createRandomArray = function () {
-    const randomArray = []
-    for (let i = 0; i < 10; i++) {
-      const randomNumber = Math.floor(Math.random() * 1000) + 1
-      randomArray.push(randomNumber)
-    }
-    console.log(randomArray)
+    const randomArray: number[] = Array(10)
+      .fill(0)
+      .map(() => Math.floor(Math.random() * 1000))
     return randomArray
   }
 
-  const createCsv = function (randomArray: any) {
-    console.log(randomArray)
+  const createCsv = function (randomArray: any[]) {
+    Object.values(randomArray).join(',')
     return randomArray.join('\n')
   }
 
