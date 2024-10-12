@@ -3,11 +3,41 @@
   <head>
     <meta charset="UTF-8">
     <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="styles.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DiscogsCSV</title>
   </head>
   <body>
-  <div id="app"></div>
-  <script type="module" src="/src/main.ts"></script>
+    <main>
+      <section>
+        <p><h2><h1>DiscogsCSV is intended to do the following:</h1></p>
+        <ol>
+          <li>Take as input a .csv file, the first column of which contains valid Discogs release IDs</li>
+          <li>Look these release IDs up on Discogs API <a href="https://api.discogs.com/">https://api.discogs.com/</a></li>
+          <li>Return as output a new .csv file, with Discogs release data for various columns appended to the release IDs:</li>
+        </ol>
+      </section>
+      <section>
+        <h2>Output columns:</h2>
+        <ul>
+          <li>release_id</li>
+          <li>artist</li>
+          <li>title</li>
+          <li>format</li>
+          <li>qty</li>
+          <li>format descriptions</li>
+          <li>label</li>
+          <li>catno</li>
+          <li>country</li>
+          <li>year</li>
+          <li>genres</li>
+          <li>styles</li>
+          <li>barcode</li>
+          <li>tracklist</li>
+        </ul>
+      </section>
+      <div id="app"></div>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
