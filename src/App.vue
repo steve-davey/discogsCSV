@@ -2,22 +2,27 @@
 
 import { ref, watch } from 'vue'
 import FileUpload from '@/components/FileUpload.vue';
-import { fetchRelease, parseCsvToArray } from '@/parser';
+import { parseCsvToArray } from '@/parser';
 import { prepareDownload } from './components/PrepareDownload';
-import { downloadSampleInputFile } from './components/DownloadSampleInputFile';
+import { fetchRelease } from './components/FetchRelease';
 import { createSampleInputFile } from './components/CreateSampleInputFile';
+import ProgressBar from 'primevue/progressbar';
 
 const inputData = ref<string[]>([])
 const outputData = ref<null | any[]>(null)
+const progress = ref<number>(0)
 
 async function setFile(file: File) {
     inputData.value = await parseCsvToArray(file)
     console.log(inputData.value)
 }
 
-async function fetchReleases(idList: string[]) {
+async function fetchReleases(releaseIds: string[]) {
     try {
-        const data = await fetchRelease(idList)
+        progress.value = 0
+        const data = await fetchRelease(releaseIds, (loaded, total) => {
+            progress.value = Math.round((loaded / total) * 100)
+        })
         console.log('Fetched data from Discogs', data)
         outputData.value = data
         return data
@@ -44,15 +49,19 @@ watch(outputData, newValue => {
 
 <template>
     <div>
-        <button @click="downloadSampleInputFile">Download basic sample file</button>
-    </div>
-
-    <div>
-        <button @click="createSampleInputFile">Download random sample file</button>
+        <button @click="createSampleInputFile">Download randomised sample file</button>
     </div>
 
     <div>
         <FileUpload @file="setFile" />
+    </div>
+
+    <div>
+        <ProgressBar :value="progress"></ProgressBar>
+    </div>
+
+    <div>
+        {{ progress }}%
     </div>
 
     <div>

@@ -19,6 +19,7 @@ export function processReleaseData(releaseId: string, data: GetReleaseResponse) 
   const format = data.formats.map((format) => format.name)
   const labels = data.labels.map((label) => label.name)
   const qty = data.formats.map((format) => format.qty)
+  const title = data.title
   const tracklist = data.tracklist.map((track) => track.title)
   const uniqueCatno = [...new Set(catno)]
   const uniqueLabels = [...new Set(labels)]
@@ -34,6 +35,7 @@ export function processReleaseData(releaseId: string, data: GetReleaseResponse) 
   const formattedData: any[] = [
     releaseId,
     formattedArtists,
+    title,
     format,
     qty,
     formattedDescriptions,
