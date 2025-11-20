@@ -5,7 +5,7 @@ app.http('getRelease', {
     methods: ['GET', 'POST'],
     authLevel: 'anonymous',
     handler: async (request) => {
-        const releaseId = request.query.get('releaseId');
+        const releaseId = request.query.get('releaseId'); 
         
         if (!releaseId) {
             return {
