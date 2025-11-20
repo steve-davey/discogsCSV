@@ -13,7 +13,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@lionralfs/discogs-client": "^latest-version",
+    "@lionralfs/discogs-client": "^4.1.3",
     "papaparse": "^5.4.1",
     "primevue": "^4.4.1",
     "ts-progress": "^0.1.9",
