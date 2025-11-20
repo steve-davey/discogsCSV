@@ -1,4 +1,3 @@
-import { DiscogsClient } from '@lionralfs/discogs-client'
 import { processReleaseData } from './ProcessReleaseData'
 
 export default {
@@ -8,8 +7,6 @@ export default {
   }
 }
 
-const db = new DiscogsClient().database()
-
 export async function fetchRelease(
   releaseIds: string[],
   onProgress: (loaded: number, total: number) => void
@@ -17,16 +14,31 @@ export async function fetchRelease(
   const total = releaseIds.length
   let loaded = 0
   const processedData = []
+
   for (const id of releaseIds) {
     try {
-      const { data } = await db.getRelease(id)
-      processedData.push(processReleaseData(id, data))
+      console.log(`Fetching release ${id}...`)
+      const response = await fetch(`/api/getRelease?releaseId=${id}`)
+      console.log(`Response status: ${response.status}`)
+      
+      const result = await response.json()
+      console.log(`Result:`, result)
+      
+      if (result.success) {
+        processedData.push(processReleaseData(id, result.data))
+      } else {
+        console.error(`Failed for ${id}:`, result)
+        processedData.push([result.error])
+      }
+      
       loaded++
       onProgress(loaded, total)
+      
     } catch (err) {
-      console.error('Discogs error', err)
-      const releaseNotFound: string[] = [`Release with ID ${id} does not exist`]
-      processedData.push(releaseNotFound)
+      console.error('API error for', id, ':', err)
+      processedData.push([`Release with ID ${id} does not exist`])
+      loaded++
+      onProgress(loaded, total)
     }
   }
 

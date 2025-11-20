@@ -13,9 +13,9 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@lionralfs/discogs-client": "^4.1.0",
+    "@lionralfs/discogs-client": "^latest-version",
     "papaparse": "^5.4.1",
-    "primevue": "^4.0.7",
+    "primevue": "^4.4.1",
     "ts-progress": "^0.1.9",
     "vue": "^3.4.15",
     "vue-csv-import": "^4.1.2"
