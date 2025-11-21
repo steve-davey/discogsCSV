@@ -1,18 +1,12 @@
 {
   "name": "api",
   "version": "1.0.0",
-  "type": "module",
   "description": "",
-  "main": "src/index.js",
   "scripts": {
     "start": "func start",
     "test": "echo \"No tests yet...\""
   },
-  "engines": {
-    "node": ">=20.0.0"
-  },
   "dependencies": {
-    "@azure/functions": "^4.9.0",
     "@lionralfs/discogs-client": "^4.1.3"
   }
 }
