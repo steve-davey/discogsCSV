@@ -1,5 +1,2 @@
-const { app } = require('@azure/functions');
-
-app.setup({
-    enableHttpStream: true,
-});
+import './functions/getRelease.js';
+import './functions/message.js';
