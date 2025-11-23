@@ -1,10 +1,14 @@
 {
   "name": "api",
   "version": "1.0.0",
+  "type": "module",
   "description": "",
   "scripts": {
     "start": "func start",
     "test": "echo \"No tests yet...\""
+  },
+  "engines": {
+    "node": ">=20.0.0"
   },
   "dependencies": {
     "@lionralfs/discogs-client": "^4.1.3"
