@@ -17,3 +17,5 @@ DiscogsCSV is intended to do the following:
 - styles
 - barcode
 - tracklist
+
+I have included a button to download a randomised sample input file.
