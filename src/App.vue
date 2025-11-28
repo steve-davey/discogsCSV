@@ -49,7 +49,7 @@ watch(outputData, newValue => {
 
 <template>
     <div>
-        <button @click="createSampleInputFile">Download randomised sample file</button>
+        <button @click="createSampleInputFile">Download sample input file</button>
     </div>
 
     <div>
