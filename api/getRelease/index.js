@@ -11,7 +11,6 @@ class RateLimiter {
     async waitIfNeeded() {
         const now = Date.now();
         
-        // Remove requests outside the current window
         this.requests = this.requests.filter(time => now - time < this.windowMs);
         
         if (this.requests.length >= this.maxRequests) {
@@ -20,7 +19,6 @@ class RateLimiter {
             console.log(`Rate limit reached (${this.requests.length}/${this.maxRequests}). Waiting ${Math.ceil(waitTime/1000)}s...`);
             await new Promise(resolve => setTimeout(resolve, waitTime));
             
-            // Clear the window after waiting
             this.requests = [];
         }
         
@@ -43,13 +41,10 @@ export default async function (context, req) {
 
     await rateLimiter.waitIfNeeded(); 
 
-    // Resolve token safely across environments (Node/Azure Functions or tests)
     const token =
         (typeof process !== 'undefined' && process.env && process.env.DISCOGS_TOKEN) ||
-        // allow passing token in request header for testing: 'x-discogs-token'
         (req.headers && req.headers['x-discogs-token']);
 
-    // For debugging deployments: log only presence, never the token value
     console.log('DISCOGS_TOKEN present:', !!token);
     if (!token) {
         context.res = {
@@ -59,7 +54,6 @@ export default async function (context, req) {
         return;
     }
 
-    // Authenticate with your Discogs token to get 60 req/min instead of 25
     const client = new DiscogsClient({
         auth: {
             userToken: token

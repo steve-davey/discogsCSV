@@ -10,10 +10,12 @@ export default {
 export async function fetchRelease(
   releaseIds: string[],
   onProgress: (loaded: number, total: number) => void
-): Promise<any[]> {
+): Promise<(string | number)[][]> {
   const total = releaseIds.length
   let loaded = 0
   const processedData = []
+
+  const DELAY_MS = 1100; // ~54 requests per minute to stay safely under 60/min
 
   for (const id of releaseIds) {
     try {
@@ -33,6 +35,10 @@ export async function fetchRelease(
       
       loaded++
       onProgress(loaded, total)
+
+      if (loaded < total) {
+        await new Promise(resolve => setTimeout(resolve, DELAY_MS));
+      }
       
     } catch (err) {
       console.error('API error for', id, ':', err)
