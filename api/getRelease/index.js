@@ -18,6 +18,8 @@ export default async function (context, req) {
         // allow passing token in request header for testing: 'x-discogs-token'
         (req.headers && req.headers['x-discogs-token']);
 
+    // For debugging deployments: log only presence, never the token value
+    console.log('DISCOGS_TOKEN present:', !!token);
     if (!token) {
         context.res = {
             status: 500,
