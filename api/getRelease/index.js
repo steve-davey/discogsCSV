@@ -1,3 +1,4 @@
+/* eslint-env node */
 import { DiscogsClient } from '@lionralfs/discogs-client';
 
 export default async function (context, req) {
@@ -11,14 +12,36 @@ export default async function (context, req) {
         return;
     }
 
-    const db = new DiscogsClient().database();
+    // Resolve token safely across environments (Node/Azure Functions or tests)
+    const token =
+        (typeof process !== 'undefined' && process.env && process.env.DISCOGS_TOKEN) ||
+        // allow passing token in request header for testing: 'x-discogs-token'
+        (req.headers && req.headers['x-discogs-token']);
+
+    if (!token) {
+        context.res = {
+            status: 500,
+            body: { success: false, error: 'DISCOGS_TOKEN not set in environment or request header' }
+        };
+        return;
+    }
+
+    // Authenticate with your Discogs token to get 60 req/min instead of 25
+    const client = new DiscogsClient({
+        auth: {
+            userToken: token
+        }
+    });
+    const db = client.database();
     
     const maxRetries = 3;
     let lastError;
     
     for (let attempt = 0; attempt < maxRetries; attempt++) {
         try {
-            const { data } = await db.getRelease(releaseId);
+            const { data, rateLimit } = await db.getRelease(releaseId);
+            
+            console.log(`Release ${releaseId}: ${rateLimit?.remaining || '?'}/${rateLimit?.limit || '?'} requests remaining`);
             
             context.res = {
                 status: 200,
@@ -29,8 +52,14 @@ export default async function (context, req) {
         } catch (err) {
             lastError = err;
             
+            console.error(`Error fetching ${releaseId} (attempt ${attempt + 1}):`, {
+                status: err.response?.status,
+                message: err.message
+            });
+            
             if (err.response?.status === 429) {
                 const waitTime = Math.pow(2, attempt) * 1000;
+                console.log(`⚠️ Rate limited on ${releaseId}, waiting ${waitTime}ms...`);
                 await new Promise(resolve => setTimeout(resolve, waitTime));
                 continue;
             }
@@ -49,4 +78,4 @@ export default async function (context, req) {
             details: lastError?.message 
         }
     };
-};
+}
