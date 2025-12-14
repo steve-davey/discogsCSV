@@ -1,6 +1,35 @@
 /* eslint-env node */
 import { DiscogsClient } from '@lionralfs/discogs-client';
 
+class RateLimiter {
+    constructor(maxRequests = 55, windowMs = 60000) {
+        this.maxRequests = maxRequests;
+        this.windowMs = windowMs;
+        this.requests = [];
+    }
+    
+    async waitIfNeeded() {
+        const now = Date.now();
+        
+        // Remove requests outside the current window
+        this.requests = this.requests.filter(time => now - time < this.windowMs);
+        
+        if (this.requests.length >= this.maxRequests) {
+            const oldestRequest = this.requests[0];
+            const waitTime = this.windowMs - (now - oldestRequest) + 100; // +100ms buffer
+            console.log(`Rate limit reached (${this.requests.length}/${this.maxRequests}). Waiting ${Math.ceil(waitTime/1000)}s...`);
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+            
+            // Clear the window after waiting
+            this.requests = [];
+        }
+        
+        this.requests.push(Date.now());
+    }
+}
+
+const rateLimiter = new RateLimiter(55, 60000); // 55 requests per minute
+
 export default async function (context, req) {
     const releaseId = req.query.releaseId;
     
@@ -11,6 +40,8 @@ export default async function (context, req) {
         };
         return;
     }
+
+    await rateLimiter.waitIfNeeded(); 
 
     // Resolve token safely across environments (Node/Azure Functions or tests)
     const token =
