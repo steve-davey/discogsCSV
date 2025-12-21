@@ -22,8 +22,6 @@ function escapeCSV(value: any): string {
 }
 
 export function prepareDownload(data: any[][]) {
-  let csvContent = 'data:text/csv;charset=utf-8,';
-
   if (!data || data.length === 0) {
     console.warn('No data provided for CSV download');
     return;
@@ -35,13 +33,18 @@ export function prepareDownload(data: any[][]) {
     row.map(cell => escapeCSV(cell)).join(',')
   ).join('\n');
 
-  csvContent += rows;
+  // Replace the encodeURI approach with a Blob + object URL:
+  const csvString = rows; // already properly escaped & joined
+  const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
 
-  const encodedUri = encodeURI(csvContent);
   const link = document.createElement('a');
-  link.setAttribute('href', encodedUri);
+  link.href = url;
   link.setAttribute('download', 'my_data.csv');
-  document.body.appendChild(link); // Required for Firefox
+  document.body.appendChild(link);
   link.click();
-  document.body.removeChild(link); // Clean up
+
+  // cleanup
+  URL.revokeObjectURL(url);
+  document.body.removeChild(link);
 }
