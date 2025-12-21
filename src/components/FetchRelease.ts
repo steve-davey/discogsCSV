@@ -9,6 +9,7 @@ export default {
 
 export async function fetchRelease(
   releaseIds: string[],
+  rowsToProcess: string[][],
   onProgress: (loaded: number, total: number) => void
 ): Promise<(string | number)[][]> {
   const total = releaseIds.length
@@ -17,7 +18,10 @@ export async function fetchRelease(
 
   const DELAY_MS = 1100; // ~54 requests per minute to stay safely under 60/min
 
-  for (const id of releaseIds) {
+  for (let i = 0; i < releaseIds.length; i++) {
+    const id = releaseIds[i]
+    const fullRow = rowsToProcess[i]
+
     try {
       console.log(`Fetching release ${id}...`)
       const response = await fetch(`/api/getRelease?releaseId=${id}`)
@@ -27,10 +31,13 @@ export async function fetchRelease(
       console.log(`Result:`, result)
       
       if (result.success) {
-        processedData.push(processReleaseData(id, result.data))
+        const apiData = processReleaseData(id, result.data)
+        // Combine: [releaseId, other input columns, API data (excluding releaseId)]
+        const combinedRow = [id, ...fullRow.slice(1), ...apiData.slice(1)]
+        processedData.push(combinedRow)
       } else {
         console.error(`Failed for ${id}:`, result)
-        processedData.push([result.error])
+        processedData.push([...fullRow, result.error])
       }
       
       loaded++
@@ -42,7 +49,7 @@ export async function fetchRelease(
       
     } catch (err) {
       console.error('API error for', id, ':', err)
-      processedData.push([`Release with ID ${id} does not exist`])
+      processedData.push([...fullRow, `Release with ID ${id} does not exist`])
       loaded++
       onProgress(loaded, total)
     }

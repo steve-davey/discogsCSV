@@ -1,5 +1,3 @@
-import { ROW_NAMES } from './RowNames'
-
 export default {
   name: 'PrepareDownload',
   methods: {
@@ -24,16 +22,21 @@ function escapeCSV(value: any): string {
 }
 
 export function prepareDownload(data: any[][]) {
-  // Escape header row
-  const header = ROW_NAMES.map(name => escapeCSV(name)).join(',');
-  
-  // Escape data rows
-  const rows = data.map(row => 
+  let csvContent = 'data:text/csv;charset=utf-8,';
+
+  if (!data || data.length === 0) {
+    console.warn('No data provided for CSV download');
+    return;
+  }
+
+  // Expect the caller (App.vue) to have prepended a single header row.
+  // Serialize every row as-is (escape cells and join with commas).
+  const rows = data.map(row =>
     row.map(cell => escapeCSV(cell)).join(',')
   ).join('\n');
-  
-  const csvContent = 'data:text/csv;charset=utf-8,' + header + '\n' + rows;
-  
+
+  csvContent += rows;
+
   const encodedUri = encodeURI(csvContent);
   const link = document.createElement('a');
   link.setAttribute('href', encodedUri);
